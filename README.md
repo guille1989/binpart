@@ -110,11 +110,11 @@ src/
       [id]/
         page.tsx                   # Página de detalle (Server Component)
   components/
-    BackButton.tsx        # Botón para volver atrás en la navegación
-    PokemonDetail.tsx     # Muestra el detalle de un Pokémon (imagen, tipos, stats, evoluciones)
-    PokemonGrid.tsx       # Grid responsivo para mostrar el listado de Pokémon
-    Loader.tsx            # Indicador de carga y botón para cargar más resultados
-    SearchBar.tsx         # Buscador y filtros (tipo, generación) en la UI principal
+    BackButton.tsx                 # Botón para volver atrás en la navegación
+    PokemonDetail.tsx              # Muestra el detalle de un Pokémon (imagen, tipos, stats, evoluciones)
+    PokemonGrid.tsx                # Grid responsivo para mostrar el listado de Pokémon
+    Loader.tsx                     # Indicador de carga y botón para cargar más resultados
+    SearchBar.tsx                  # Buscador y filtros (tipo, generación) en la UI principal
   lib/
     pokeapi.ts                     # REST: detalle y utilidades (stats, evoluciones, etc.)
     pokeapi-gql.ts                 # GraphQL: listado por especies (+ filtro gen)
