@@ -5,6 +5,10 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+
+const config = {
+  // ...otras opciones
+  allowedDevOrigins: ["http://192.168.0.14:3000"], // agrega aquí las IPs/clientes permitidos
+};
 
 export default config;

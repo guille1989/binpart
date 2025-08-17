@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") ?? 36); // cantidad por página
     const offset = Number(searchParams.get("offset") ?? 0); // desplazamiento
-    const gen = searchParams.get("gen") || undefined; // generación (opcional)
+    const gen = searchParams.get("gen") ?? undefined; // generación (opcional)
 
     // Llama a la función que obtiene los datos desde GraphQL (o fallback REST)
     const { items, total } = await getPokemonSpeciesPageGQL(limit, offset, gen);

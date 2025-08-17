@@ -3,9 +3,9 @@
  * slot: posición del tipo (primario/secundario)
  * type: objeto con nombre y URL del tipo
  */
-export type PokemonType = { 
-  slot: number; 
-  type: { name: string; url: string } 
+export type PokemonType = {
+  slot: number;
+  type: { name: string; url: string };
 };
 
 /**
@@ -21,6 +21,8 @@ export type PokemonBasic = {
   isLegendary?: boolean; // opcional, si es legendario
 };
 
+export type PokemonListResponse = { items: PokemonBasic[] };
+
 /**
  * Entrada de evolución para mostrar la cadena evolutiva de un Pokémon.
  * isCurrent indica si corresponde al Pokémon actual.
@@ -31,6 +33,8 @@ export type EvolutionEntry = {
   sprite: string;
   isCurrent: boolean;
 };
+
+export type PokemonEvolutionEntryResponse = { items: EvolutionEntry[] };
 
 /**
  * Respuesta genérica de una consulta GraphQL.
@@ -92,4 +96,9 @@ export type SearchBarProps = {
   onGenFilterChange: (value: string) => void;
   typeOptions: string[];
   generationOptions: string[];
-}; 
+};
+
+export type EvolutionNode = {
+  species: { name: string; url: string };
+  evolves_to: EvolutionNode[];
+};

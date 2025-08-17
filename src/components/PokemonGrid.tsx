@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { PokemonBasic } from "../types/pokemon";
 import { TYPE_COLORS } from "../lib/styles";
 import { generationFromId } from "../lib/generationFromId";
 import type { PokemonGridProps } from "../types/pokemon";

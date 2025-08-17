@@ -9,7 +9,7 @@ const OFFICIAL_ARTWORK_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
 const officialArtwork = (id: number) => `${OFFICIAL_ARTWORK_BASE}${id}.png`;
 
-async function postGQL<T>(query: string, variables: Record<string, any>) {
+async function postGQL<T>(query: string, variables: Record<string, unknown>) {
   const res = await fetch(GQL_ENDPOINT, {
     method: "POST",
     headers: { "content-type": "application/json" },

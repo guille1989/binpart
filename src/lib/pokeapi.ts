@@ -5,6 +5,7 @@ import type {
   PokemonBasic,
   EvolutionEntry,
   PokemonType,
+  EvolutionNode
 } from "../types/pokemon";
 
 // URL base de la PokéAPI, configurable por variable de entorno.
@@ -103,24 +104,24 @@ export async function getPokemonFull(
   const evo = await fetchJSON<{
     chain: {
       species: { name: string; url: string };
-      evolves_to: any[];
+  evolves_to: EvolutionNode[];
     };
   }>(species.evolution_chain.url);
 
   const flatEvolutionNames: string[] = [];
-  (function walk(node: any) {
+  (function walk(node: EvolutionNode | undefined) {
     if (!node) return;
     flatEvolutionNames.push(node.species.name);
-    (node.evolves_to || []).forEach(walk);
+    (node.evolves_to ?? []).forEach(walk);
   })(evo.chain);
 
   // Mapear a entradas con id + sprite
   const evolutions: EvolutionEntry[] = flatEvolutionNames.map((name) => {
     // Podemos derivar el id desde la URL de species (más preciso)
     // Para eso, buscamos el nodo en la cadena:
-    const findNode = (n: any): string | null => {
+    const findNode = (n: EvolutionNode): string | null => {
       if (n.species.name === name) return n.species.url;
-      for (const child of n.evolves_to || []) {
+      for (const child of n.evolves_to ?? []) {
         const url = findNode(child);
         if (url) return url;
       }
@@ -176,10 +177,10 @@ export async function searchPokemonIncludingEvolutions(
   await Promise.all(
     matches.map(async (m) => {
       const sp = await fetchJSON<{ evolution_chain: { url: string } }>(m.url);
-      const chain = await fetchJSON<{ chain: any }>(sp.evolution_chain.url);
+      const chain = await fetchJSON<{ chain: EvolutionNode }>(sp.evolution_chain.url);
 
       const collect: EvolutionEntry[] = [];
-      (function walk(node: any) {
+      (function walk(node: EvolutionNode | undefined) {
         if (!node) return;
         const name = node.species.name;
         const id = getIdFromUrl(node.species.url);
@@ -189,7 +190,7 @@ export async function searchPokemonIncludingEvolutions(
           sprite: officialArtwork(id),
           isCurrent: false,
         });
-        (node.evolves_to || []).forEach(walk);
+        (node.evolves_to ?? []).forEach(walk);
       })(chain.chain);
 
       collect.forEach((e) => byName.set(e.name, e));
