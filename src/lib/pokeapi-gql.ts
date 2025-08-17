@@ -1,4 +1,5 @@
 import type { PokemonBasic, GraphQLResp } from "../types/pokemon";
+import { getPokemonSpeciesPageREST } from "./pokeapi";
 import { GEN_RANGES } from "../lib/utils";
 
 const GQL_ENDPOINT =
@@ -10,6 +11,7 @@ const OFFICIAL_ARTWORK_BASE =
 const officialArtwork = (id: number) => `${OFFICIAL_ARTWORK_BASE}${id}.png`;
 
 async function postGQL<T>(query: string, variables: Record<string, unknown>) {
+  console.log("Usando GraphQL");
   const res = await fetch(GQL_ENDPOINT, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -32,53 +34,59 @@ export async function getPokemonSpeciesPageGQL(
   offset = 0,
   gen?: string,
 ): Promise<{ items: PokemonBasic[]; total: number }> {
-  const range = gen ? GEN_RANGES[gen] : undefined;
-  const whereObj = range
-    ? `where: { id: { _gte: ${range.min}, _lte: ${range.max} } }`
-    : "";
-  const whereAgg = whereObj ? `(${whereObj})` : "";
-  const whereArg = whereObj ? `, ${whereObj}` : "";
+  try {
+    const range = gen ? GEN_RANGES[gen] : undefined;
+    const whereObj = range
+      ? `where: { id: { _gte: ${range.min}, _lte: ${range.max} } }`
+      : "";
+    const whereAgg = whereObj ? `(${whereObj})` : "";
+    const whereArg = whereObj ? `, ${whereObj}` : "";
 
-  const query = /* GraphQL */ `
-    query P($limit:Int!, $offset:Int!){
-      species: pokemon_v2_pokemonspecies(limit:$limit, offset:$offset, order_by:{id: asc}${whereArg}){
-        id
-        name
-        pokemon_v2_pokemons(where:{is_default:{_eq:true}}){
-          pokemon_v2_pokemontypes(order_by:{slot: asc}){ slot pokemon_v2_type{ name } }
+    const query = /* GraphQL */ `
+      query P($limit:Int!, $offset:Int!){
+        species: pokemon_v2_pokemonspecies(limit:$limit, offset:$offset, order_by:{id: asc}${whereArg}){
+          id
+          name
+          pokemon_v2_pokemons(where:{is_default:{_eq:true}}){
+            pokemon_v2_pokemontypes(order_by:{slot: asc}){ slot pokemon_v2_type{ name } }
+          }
         }
+        total: pokemon_v2_pokemonspecies_aggregate${whereAgg}{ aggregate{ count } }
       }
-      total: pokemon_v2_pokemonspecies_aggregate${whereAgg}{ aggregate{ count } }
-    }
-  `;
+    `;
 
-  const data = await postGQL<{
-    species: Array<{
-      id: number;
-      name: string;
-      pokemon_v2_pokemons: Array<{
-        pokemon_v2_pokemontypes: Array<{
-          slot: number;
-          pokemon_v2_type: { name: string };
+    const data = await postGQL<{
+      species: Array<{
+        id: number;
+        name: string;
+        pokemon_v2_pokemons: Array<{
+          pokemon_v2_pokemontypes: Array<{
+            slot: number;
+            pokemon_v2_type: { name: string };
+          }>;
         }>;
       }>;
-    }>;
-    total: { aggregate: { count: number } };
-  }>(query, { limit, offset });
+      total: { aggregate: { count: number } };
+    }>(query, { limit, offset });
 
-  const items: PokemonBasic[] = data.species.map((s) => ({
-    id: s.id,
-    name: s.name,
-    sprite: officialArtwork(s.id),
-    types: (s.pokemon_v2_pokemons?.[0]?.pokemon_v2_pokemontypes ?? []).map(
-      (t) => ({
-        slot: t.slot,
-        type: { name: t.pokemon_v2_type.name, url: "" },
-      }),
-    ),
-  }));
+    const items: PokemonBasic[] = data.species.map((s) => ({
+      id: s.id,
+      name: s.name,
+      sprite: officialArtwork(s.id),
+      types: (s.pokemon_v2_pokemons?.[0]?.pokemon_v2_pokemontypes ?? []).map(
+        (t) => ({
+          slot: t.slot,
+          type: { name: t.pokemon_v2_type.name, url: "" },
+        }),
+      ),
+    }));
 
-  return { items, total: data.total.aggregate.count };
+    return { items, total: data.total.aggregate.count };
+  } catch (err) {
+    console.log("Usando REST (fallback)");
+    // Aquí deberías llamar a la función REST real, por ejemplo:
+    return await getPokemonSpeciesPageREST(limit, offset, gen);
+  }
 }
 
 /** Wrapper anterior por compatibilidad */

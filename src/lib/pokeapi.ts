@@ -45,11 +45,12 @@ async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
  * @param limit Cantidad de Pokémon a traer
  * @param offset Offset para paginación
  */
-export async function getPokemonList(
-  limit = 1,
+export async function getPokemonSpeciesPageREST(
+  limit = 36,
   offset = 0,
-): Promise<PokemonBasic[]> {
-  const list = await fetchJSON<{ results: PokeAPIListItem[] }>(
+  gen?: string,
+): Promise<{ items: PokemonBasic[]; total: number }> {
+  const list = await fetchJSON<{ results: PokeAPIListItem[]; count: number }>(
     `${BASE}/pokemon?limit=${limit}&offset=${offset}`,
   );
   // Traemos detalles en paralelo (tipos e id)
@@ -60,7 +61,6 @@ export async function getPokemonList(
         name: string;
         types: PokemonType[];
       }>(it.url);
-      console.log(detail);
       return {
         id: detail.id,
         name: detail.name,
@@ -71,7 +71,10 @@ export async function getPokemonList(
   );
 
   // Orden por id por defecto (por si acaso)
-  return items.sort((a, b) => a.id - b.id);
+  return {
+    items: items.sort((a, b) => a.id - b.id),
+    total: list.count ?? items.length,
+  };
 }
 
 /**
