@@ -1,5 +1,14 @@
-import type { PokemonBasic } from "../lib/pokeapi";
+import type { PokemonBasic } from "../types/pokemon";
 
+/**
+ * Filtra una lista de Pokémon según nombre, tipo y generación.
+ * @param items Lista de Pokémon básicos
+ * @param query Texto de búsqueda por nombre
+ * @param typeFilter Filtro por tipo de Pokémon
+ * @param genFilter Filtro por generación (ej: 'generation-i')
+ * @param generationFromId Función que determina la generación a partir del id
+ * @returns Lista filtrada de Pokémon
+ */
 export function filterPokemon(
   items: PokemonBasic[],
   query: string,

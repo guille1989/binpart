@@ -1,29 +1,13 @@
-export type PokemonType = { slot: number; type: { name: string; url: string } };
-export type PokemonBasic = {
-  id: number;
-  name: string;
-  sprite: string;
-  types: PokemonType[];
-};
+import type { PokemonBasic, GraphQLResp } from "../types/pokemon";
+import { GEN_RANGES } from "../lib/utils";
 
-const GQL_ENDPOINT = "https://beta.pokeapi.co/graphql/v1beta";
-const officialArtwork = (id: number) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-
-// Rangos por generación (IDs de especie)
-export const GEN_RANGES: Record<string, { min: number; max: number }> = {
-  "generation-i": { min: 1, max: 151 },
-  "generation-ii": { min: 152, max: 251 },
-  "generation-iii": { min: 252, max: 386 },
-  "generation-iv": { min: 387, max: 493 },
-  "generation-v": { min: 494, max: 649 },
-  "generation-vi": { min: 650, max: 721 },
-  "generation-vii": { min: 722, max: 809 },
-  "generation-viii": { min: 810, max: 898 },
-  "generation-ix": { min: 899, max: 1025 }, // ajusta si crece la PokéAPI
-};
-
-type GraphQLResp<T> = { data?: T; errors?: Array<{ message: string }> };
+const GQL_ENDPOINT =
+  process.env.NEXT_PUBLIC_GQL_ENDPOINT ??
+  "https://beta.pokeapi.co/graphql/v1beta";
+const OFFICIAL_ARTWORK_BASE =
+  process.env.NEXT_PUBLIC_OFFICIAL_ARTWORK_BASE ??
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
+const officialArtwork = (id: number) => `${OFFICIAL_ARTWORK_BASE}${id}.png`;
 
 async function postGQL<T>(query: string, variables: Record<string, any>) {
   const res = await fetch(GQL_ENDPOINT, {

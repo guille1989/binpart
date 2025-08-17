@@ -27,7 +27,7 @@ Next.js (App Router) + TypeScript
 
 Tailwind CSS
 
-PokéAPI GraphQL (https://beta.pokeapi.co/graphql/v1beta)
+PokéAPI GraphQL ([beta.pokeapi.co/graphql/v1beta](https://beta.pokeapi.co/graphql/v1beta))
 ↪️ Fallback REST si GraphQL falla (rate-limit/red)
 
 Sin DB, sin Auth, sin tRPC (T3 mínimo)
@@ -99,27 +99,36 @@ Optimizada para la PokéAPI con GraphQL (1 llamada por página) y fallback REST.
 ```text
 src/
   app/
-    page.tsx                       # Página principal: listado + filtros + buscador + infinite scroll
+    layout.tsx                       # Layout global de la aplicación
+    page.tsx                         # Página principal: listado + filtros + buscador + infinite scroll
     api/
       pokemon/
         list/
-          route.ts                 # Endpoint listado (GraphQL + fallback REST, acepta ?gen)
+          route.ts                   # Endpoint listado (GraphQL + fallback REST, acepta ?gen)
+        [id]/
+          route.ts                   # Endpoint para detalle de Pokémon por id
       search/
-        route.ts                   # Buscador por nombre (incluye evoluciones)
+        route.ts                     # Buscador por nombre (incluye evoluciones)
     pokemon/
       [id]/
-        page.tsx                   # Página de detalle (Server Component)
+        page.tsx                     # Página de detalle (Server Component)
   components/
-    BackButton.tsx                 # Botón para volver atrás en la navegación
-    PokemonDetail.tsx              # Muestra el detalle de un Pokémon (imagen, tipos, stats, evoluciones)
-    PokemonGrid.tsx                # Grid responsivo para mostrar el listado de Pokémon
-    Loader.tsx                     # Indicador de carga y botón para cargar más resultados
-    SearchBar.tsx                  # Buscador y filtros (tipo, generación) en la UI principal
+    BackButton.tsx                   # Botón para volver atrás en la navegación
+    PokemonDetail.tsx                # Muestra el detalle de un Pokémon (imagen, tipos, stats, evoluciones)
+    PokemonGrid.tsx                  # Grid responsivo para mostrar el listado de Pokémon
+    Loader.tsx                       # Indicador de carga y botón para cargar más resultados
+    SearchBar.tsx                    # Buscador y filtros (tipo, generación) en la UI principal
   lib/
-    pokeapi.ts                     # REST: detalle y utilidades (stats, evoluciones, etc.)
-    pokeapi-gql.ts                 # GraphQL: listado por especies (+ filtro gen)
-    styles.ts                      # Colores por tipo y helper de generación
-    filterPokemon.ts               # Utilidad para filtrar listado
+    pokeapi.ts                       # REST: detalle y utilidades (stats, evoluciones, etc.)
+    pokeapi-gql.ts                   # GraphQL: listado por especies (+ filtro gen)
+    styles.ts                        # Colores por tipo y helper de generación
+    filterPokemon.ts                 # Utilidad para filtrar listado
+    generationFromId.ts              # Helper para obtener generación desde id
+    utils.ts                         # Constantes y utilidades varias (rangos, opciones)
+  styles/
+    globals.css                      # Estilos globales Tailwind
+public/
+  favicon.ico                        # Ícono de la app
 ```
 
 ---

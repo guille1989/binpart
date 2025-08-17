@@ -7,100 +7,12 @@ import { filterPokemon } from "../lib/filterPokemon";
 import { Loader } from "../components/Loader";
 import { SearchBar } from "../components/SearchBar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-// --- Tipos mínimos que esperamos del endpoint /api/pokemon/list
-// (coinciden con PokemonBasic en src/lib/pokeapi.ts)
-type PokemonType = { slot: number; type: { name: string; url: string } };
-export type PokemonBasic = {
-  id: number;
-  name: string;
-  sprite: string;
-  types: PokemonType[];
-  isMythical?: boolean; // opcional, si es mítico
-  isLegendary?: boolean; // opcional, si es legendario
-};
-
-// Para el buscador que incluye evoluciones
-export type EvolutionEntry = {
-  id: number;
-  name: string;
-  sprite: string;
-  isCurrent: boolean;
-};
-
-// --- Utilidades ---
-const TYPE_OPTIONS = [
-  "bug",
-  "dark",
-  "dragon",
-  "electric",
-  "fairy",
-  "fighting",
-  "fire",
-  "flying",
-  "ghost",
-  "grass",
-  "ground",
-  "ice",
-  "normal",
-  "poison",
-  "psychic",
-  "rock",
-  "steel",
-  "water",
-];
-
-// Colores base por tipo (usa Tailwind classes)
-export const TYPE_COLORS: Record<string, string> = {
-  bug: "bg-lime-500 text-white",
-  dark: "bg-gray-800 text-white",
-  dragon: "bg-indigo-600 text-white",
-  electric: "bg-yellow-400 text-black",
-  fairy: "bg-pink-400 text-white",
-  fighting: "bg-red-700 text-white",
-  fire: "bg-orange-500 text-white",
-  flying: "bg-sky-400 text-white",
-  ghost: "bg-purple-700 text-white",
-  grass: "bg-green-500 text-white",
-  ground: "bg-amber-700 text-white",
-  ice: "bg-cyan-300 text-black",
-  normal: "bg-gray-400 text-black",
-  poison: "bg-purple-500 text-white",
-  psychic: "bg-pink-500 text-white",
-  rock: "bg-yellow-700 text-white",
-  steel: "bg-slate-400 text-black",
-  water: "bg-blue-500 text-white",
-};
-
-// Mapeo simple por rango de id -> generación (no pide llamadas extra)
-function generationFromId(id: number): string {
-  if (id >= 1 && id <= 151) return "generation-i";
-  if (id <= 251) return "generation-ii";
-  if (id <= 386) return "generation-iii";
-  if (id <= 493) return "generation-iv";
-  if (id <= 649) return "generation-v";
-  if (id <= 721) return "generation-vi";
-  if (id <= 809) return "generation-vii";
-  if (id <= 898) return "generation-viii";
-  // Ajusta si necesitas para nuevas gens de PokeAPI
-  return "generation-ix";
-}
-
-const GENERATION_OPTIONS = [
-  "generation-i",
-  "generation-ii",
-  "generation-iii",
-  "generation-iv",
-  "generation-v",
-  "generation-vi",
-  "generation-vii",
-  "generation-viii",
-  "generation-ix",
-];
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
+import {
+  TYPE_OPTIONS
+} from "../lib/styles";
+import { generationFromId } from "../lib/generationFromId";
+import { GENERATION_OPTIONS } from "../lib/utils";
+import type { PokemonBasic, EvolutionEntry } from "../types/pokemon";
 
 function useDebounced<T>(value: T, delay = 250) {
   const [v, setV] = useState(value);
@@ -166,7 +78,6 @@ export default function HomePage() {
     if (genFilter) sp.set("gen", genFilter);
     else sp.delete("gen");
     router.replace(`${pathname}?${sp.toString()}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, typeFilter, genFilter]);
 
   // Datos del listado con infinite scroll
@@ -183,7 +94,7 @@ export default function HomePage() {
   }, [typeFilter, genFilter]);
 
   // Carga de página
-  const LIMIT = 60;
+  const LIMIT = 36;
   const loadPage = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -260,7 +171,13 @@ export default function HomePage() {
 
   // Filtro en memoria por tipo y generación
   const visibleItems = useMemo(() => {
-    return filterPokemon(items, debouncedQuery, typeFilter, genFilter, generationFromId);
+    return filterPokemon(
+      items,
+      debouncedQuery,
+      typeFilter,
+      genFilter,
+      generationFromId,
+    );
   }, [items, debouncedQuery, typeFilter, genFilter]);
 
   return (
@@ -323,42 +240,17 @@ export default function HomePage() {
 
       {/* Grid del listado */}
       <section className="mt-6">
-  <PokemonGrid items={visibleItems} />
+        <PokemonGrid items={visibleItems} />
 
         {/* Loader / sentinel para infinite scroll */}
         <div ref={loaderRef}>
-          <Loader loading={loading} hasMore={hasMore} onLoadMore={() => void loadPage()} />
+          <Loader
+            loading={loading}
+            hasMore={hasMore}
+            onLoadMore={() => void loadPage()}
+          />
         </div>
       </section>
     </main>
   );
-}
-
-/* ---
-  NOTA IMPORTANTE
-  Este componente asume que tienes el endpoint /api/pokemon/list del paso anterior.
-  Si aún no lo tienes, créalo tal y como te pasé:
-  - src/app/api/pokemon/list/route.ts -> devuelve { items: PokemonBasic[], ... }
-
-  Además, para el buscador que incluye evoluciones, añade este endpoint sencillo:
-  - src/app/api/search/route.ts
---- */
-
-// src/app/api/search/route.ts
-import { NextResponse } from "next/server";
-import { searchPokemonIncludingEvolutions } from "../lib/pokeapi";
-
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const q = (searchParams.get("q") ?? "").trim();
-    if (!q) return NextResponse.json({ items: [] }, { status: 200 });
-    const items = await searchPokemonIncludingEvolutions(q);
-    return NextResponse.json({ items }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json(
-      { error: (err as Error).message },
-      { status: 500 },
-    );
-  }
 }

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { PokemonFull } from "../lib/pokeapi";
-import { TYPE_COLORS, generationFromId } from "../lib/styles";
+import type { PokemonFull } from "../types/pokemon";
+import { TYPE_COLORS } from "../lib/styles";
+import { generationFromId } from "../lib/generationFromId";
 
 export function PokemonDetail({ p }: { p: PokemonFull }) {
-  console.log("Rendering PokemonDetail for:", p.name);
   return (
     <section className="mt-2">
       <header>
@@ -18,14 +18,14 @@ export function PokemonDetail({ p }: { p: PokemonFull }) {
         </div>
       </header>
 
-  <section className="flex flex-col md:flex-row items-center justify-center gap-6">
-  <section className="flex flex-col items-center w-full md:w-auto">
+      <section className="flex flex-col items-center justify-center gap-6 md:flex-row">
+        <section className="flex w-full flex-col items-center md:w-auto">
           {/* Imagen principal */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={p.sprite}
             alt={p.name}
-            className="mt-4 w-full max-w-xs h-auto object-contain"
+            className="mt-4 h-auto w-full max-w-xs object-contain"
           />
 
           {/* Tipos */}
@@ -43,12 +43,12 @@ export function PokemonDetail({ p }: { p: PokemonFull }) {
                 </span>
               ))}
               {p.isLegendary && (
-                <span className="rounded-full px-3 py-1 text-xs capitalize bg-yellow-200 text-black">
+                <span className="rounded-full bg-yellow-200 px-3 py-1 text-xs text-black capitalize">
                   legendary
                 </span>
               )}
               {p.isMythical && (
-                <span className="rounded-full px-3 py-1 text-xs capitalize bg-pink-200 text-black">
+                <span className="rounded-full bg-pink-200 px-3 py-1 text-xs text-black capitalize">
                   mythical
                 </span>
               )}
@@ -57,7 +57,7 @@ export function PokemonDetail({ p }: { p: PokemonFull }) {
         </section>
 
         {/* Stats */}
-  <section className="mt-6 md:ml-6 flex flex-col items-center w-full md:w-auto">
+        <section className="mt-6 flex w-full flex-col items-center md:ml-6 md:w-auto">
           <h2 className="text-lg font-semibold">Stats</h2>
           <ul className="mt-2 w-100 space-y-2">
             {p.stats.map((s) => {
@@ -84,7 +84,7 @@ export function PokemonDetail({ p }: { p: PokemonFull }) {
         </section>
       </section>
       {/* Evoluciones */}
-  <section className="mt-8">
+      <section className="mt-8">
         <h2 className="text-lg font-semibold">Evoluciones</h2>
         {p.evolutions.length === 0 ? (
           <div className="mt-2 text-sm text-gray-500">

@@ -1,49 +1,31 @@
-// src/lib/pokeapi.ts
-type PokeAPIListItem = { name: string; url: string };
+import type {
+  PokeAPIListItem,
+  PokemonFull,
+  PokemonStat,
+  PokemonBasic,
+  EvolutionEntry,
+  PokemonType,
+} from "../types/pokemon";
 
-export type PokemonType = { slot: number; type: { name: string; url: string } };
+// URL base de la PokéAPI, configurable por variable de entorno.
+const BASE =
+  process.env.NEXT_PUBLIC_POKEAPI_BASE ?? "https://pokeapi.co/api/v2";
+// URL base para sprites oficiales de Pokémon, configurable por variable de entorno.
+const OFFICIAL_ARTWORK_BASE =
+  process.env.NEXT_PUBLIC_OFFICIAL_ARTWORK_BASE ??
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
+// Devuelve la URL del sprite oficial de un Pokémon dado su id.
+const officialArtwork = (id: number) => `${OFFICIAL_ARTWORK_BASE}${id}.png`;
 
-export type PokemonStat = {
-  base_stat: number;
-  effort: number;
-  stat: { name: string; url: string };
-};
-
-export type PokemonBasic = {
-  id: number;
-  name: string;
-  sprite: string;
-  types: PokemonType[];
-};
-
-export type EvolutionEntry = {
-  id: number;
-  name: string;
-  sprite: string;
-  isCurrent: boolean;
-};
-
-export type PokemonFull = PokemonBasic & {
-  generation: string; // e.g. "generation-i"
-  stats: PokemonStat[];
-  evolutions: EvolutionEntry[];
-  captureRate: number;
-  isMythical: boolean; // true si es un Pokémon mítico
-  isLegendary: boolean; // true si es un Pokémon legendario
-};
-
-const BASE = "https://pokeapi.co/api/v2";
-
-const officialArtwork = (id: number) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-
+// Extrae el id numérico de un Pokémon desde una URL de la PokéAPI.
 const getIdFromUrl = (url: string) => {
   // URLs suelen terminar con ".../pokemon-species/25/" -> extraemos "25"
   const parts = url.split("/").filter(Boolean);
   return Number(parts[parts.length - 1]);
 };
 
-// Revisar
+// Realiza una petición fetch y devuelve el JSON tipado.
+// Incluye revalidación para caché en Next.js App Router.
 async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
@@ -57,7 +39,10 @@ async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 /**
- * Lista de Pokémon (paginada). Devuelve sólo id, name y sprite para pintar rápido.
+ * Obtiene una lista paginada de Pokémon.
+ * Devuelve sólo id, name, sprite y tipos para renderizado rápido.
+ * @param limit Cantidad de Pokémon a traer
+ * @param offset Offset para paginación
  */
 export async function getPokemonList(
   limit = 1,
@@ -74,7 +59,7 @@ export async function getPokemonList(
         name: string;
         types: PokemonType[];
       }>(it.url);
-      console.log(detail)
+      console.log(detail);
       return {
         id: detail.id,
         name: detail.name,
@@ -89,11 +74,9 @@ export async function getPokemonList(
 }
 
 /**
- * Datos completos de un Pokémon por id o nombre:
- * - name, id, sprite
- * - tipos, stats
- * - generación
- * - evoluciones (toda la cadena, marcando el actual)
+ * Obtiene los datos completos de un Pokémon por id o nombre.
+ * Incluye: name, id, sprite, tipos, stats, generación y cadena de evoluciones.
+ * @param idOrName Id numérico o nombre del Pokémon
  */
 export async function getPokemonFull(
   idOrName: string | number,
@@ -168,9 +151,10 @@ export async function getPokemonFull(
 }
 
 /**
- * Búsqueda por texto que incluya evoluciones:
- * devuelve ids/nombres que coinciden o que son evoluciones de la coincidencia.
- * (Estrategia simple: resolvemos la cadena de evolución de cada match)
+ * Realiza una búsqueda por texto que incluya evoluciones.
+ * Devuelve ids/nombres que coinciden o que son evoluciones de la coincidencia.
+ * Estrategia: resuelve la cadena de evolución de cada match y deduplica resultados.
+ * @param query Texto de búsqueda
  */
 export async function searchPokemonIncludingEvolutions(
   query: string,

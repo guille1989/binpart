@@ -1,3 +1,5 @@
+// Mapeo de tipos de Pokémon a clases de Tailwind CSS para estilos de fondo y texto.
+// Cada tipo tiene un color de fondo y color de texto asociado para mostrar etiquetas o chips.
 export const TYPE_COLORS: Record<string, string> = {
   bug: "bg-lime-500 text-white",
   dark: "bg-gray-800 text-white",
@@ -19,14 +21,25 @@ export const TYPE_COLORS: Record<string, string> = {
   water: "bg-blue-500 text-white",
 };
 
-export function generationFromId(id: number): string {
-  if (id >= 1 && id <= 151) return "generation-i";
-  if (id <= 251) return "generation-ii";
-  if (id <= 386) return "generation-iii";
-  if (id <= 493) return "generation-iv";
-  if (id <= 649) return "generation-v";
-  if (id <= 721) return "generation-vi";
-  if (id <= 809) return "generation-vii";
-  if (id <= 898) return "generation-viii";
-  return "generation-ix";
-}
+// Lista de tipos de Pokémon disponibles en la Pokédex.
+// Se utiliza para generar opciones de filtrado y validación de tipos.
+export const TYPE_OPTIONS = [
+  "bug",
+  "dark",
+  "dragon",
+  "electric",
+  "fairy",
+  "fighting",
+  "fire",
+  "flying",
+  "ghost",
+  "grass",
+  "ground",
+  "ice",
+  "normal",
+  "poison",
+  "psychic",
+  "rock",
+  "steel",
+  "water",
+];
