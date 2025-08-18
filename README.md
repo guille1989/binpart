@@ -18,19 +18,7 @@ npm run lint
 npm run build
 npm start
 
-
 Requisitos: Node 18+ y npm. No hace falta .env.
-
-🧱 Stack
-
-Next.js (App Router) + TypeScript
-
-Tailwind CSS
-
-PokéAPI GraphQL ([beta.pokeapi.co/graphql/v1beta](https://beta.pokeapi.co/graphql/v1beta))
-↪️ Fallback REST si GraphQL falla (rate-limit/red)
-
-Sin DB, sin Auth, sin tRPC (T3 mínimo)
 
 🗂️ Estructura principal
 ```text
@@ -65,42 +53,11 @@ src/
     utils.ts                         # Constantes y utilidades varias (rangos, opciones)
   styles/
     globals.css                      # Estilos globales Tailwind
+  types/
+    pokemon.ts                       # Tipos globales y modelos de datos
 public/
-  favicon.ico                        # Ícono de la app
+  poke.png                        # Ícono de la app
 ```
-
-✨ Funcionalidades
-
-# PokeDesk — Next.js + TypeScript (T3 mínimo)
-Pokédex con listado, filtros (tipo y generación), buscador en tiempo real (incluye evoluciones) y detalle con imagen, tipos, stats y cadena de evoluciones.
-Optimizada para la PokéAPI con GraphQL (1 llamada por página) y fallback REST.
-
----
-
-## 🚀 Arranque rápido
-
-1. **Instalar dependencias**
-   ```bash
-   npm install
-   ```
-2. **Desarrollo**
-   ```bash
-   npm run dev
-   # → http://localhost:3000
-   ```
-3. **Linter (opcional)**
-   ```bash
-   npm run lint
-   ```
-4. **Producción**
-   ```bash
-   npm run build
-   npm start
-   ```
-
-> Requisitos: Node 18+ y npm. No hace falta .env.
-
----
 
 ## 🧱 Stack
 - Next.js (App Router) + TypeScript
@@ -223,5 +180,8 @@ curl "http://localhost:3000/api/search?q=pika"
 
 ---
 
-## 📜 Licencia
-MIT — uso libre para evaluación y aprendizaje.
+🔗 **Despliegue:**  
+Este proyecto está desplegado en Vercel:  
+[https://pokedeskbinpart.vercel.app](https://pokedeskbinpart.vercel.app/)
+
+---
