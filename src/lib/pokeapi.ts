@@ -7,6 +7,7 @@ import type {
   PokemonType,
   EvolutionNode
 } from "../types/pokemon";
+import { GEN_RANGES } from "../lib/utils";
 
 // URL base de la PokéAPI, configurable por variable de entorno.
 const BASE =
@@ -46,12 +47,18 @@ async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
  * @param offset Offset para paginación
  */
 export async function getPokemonSpeciesPageREST(
-  limit = 36,
+  limit = 60,
   offset = 0,
   gen?: string,
 ): Promise<{ items: PokemonBasic[]; total: number }> {
+
+  const range = gen ? GEN_RANGES[gen] : undefined;
+  const whereObj = range
+  ? `${BASE}/pokemon?limit=${range.min}&offset=${range.max}`
+  : `${BASE}/pokemon?limit=${limit}&offset=${offset}`;
+
   const list = await fetchJSON<{ results: PokeAPIListItem[]; count: number }>(
-    `${BASE}/pokemon?limit=${limit}&offset=${offset}`,
+    whereObj
   );
   // Traemos detalles en paralelo (tipos e id)
   const items = await Promise.all(

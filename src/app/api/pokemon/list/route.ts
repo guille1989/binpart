@@ -5,7 +5,7 @@ import { getPokemonSpeciesPageGQL } from "../../../../lib/pokeapi-gql";
  * API Route handler para obtener el listado paginado de especies de Pokémon.
  *
  * Query params:
- * - limit: cantidad de resultados por página (default: 36)
+ * - limit: cantidad de resultados por página (default: 60)
  * - offset: desplazamiento para paginación (default: 0)
  * - gen: generación a filtrar (opcional)
  *
@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   try {
     // Extrae los parámetros de búsqueda de la URL
     const { searchParams } = new URL(req.url);
-    const limit = Number(searchParams.get("limit") ?? 36); // cantidad por página
+    const limit = Number(searchParams.get("limit") ?? 60); // cantidad por página
     const offset = Number(searchParams.get("offset") ?? 0); // desplazamiento
     const gen = searchParams.get("gen") ?? undefined; // generación (opcional)
 

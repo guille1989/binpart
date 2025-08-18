@@ -129,26 +129,26 @@ Optimizada para la PokéAPI con GraphQL (1 llamada por página) y fallback REST.
 Listado paginado (GraphQL + fallback REST).
 
 **Query params**
-- `limit` (number, por defecto 36)
+- `limit` (number, por defecto 60)
 - `offset` (number, por defecto 0)
 - `gen` (opcional: "generation-i" … "generation-ix")
 
 **Ejemplos**
 - # primera página (todas)
-  curl "http://localhost:3000/api/pokemon/list?limit=36&offset=0"
+  curl "http://localhost:3000/api/pokemon/list?limit=60&offset=0"
 - # segunda página (todas)
-  curl "http://localhost:3000/api/pokemon/list?limit=36&offset=36"
+  curl "http://localhost:3000/api/pokemon/list?limit=60&offset=60"
 - # primera página de Gen III
-  curl "http://localhost:3000/api/pokemon/list?limit=36&offset=0&gen=generation-iii"
+  curl "http://localhost:3000/api/pokemon/list?limit=60&offset=0&gen=generation-iii"
 
 **Respuesta**
 ```json
 {
   "items": [{ "id":1, "name":"bulbasaur", "sprite":"...", "types":[...] }],
-  "limit": 36,
+  "limit": 60,
   "offset": 0,
   "total": 1010,
-  "nextOffset": 36,
+  "nextOffset": 60,
   "hasMore": true
 }
 ```

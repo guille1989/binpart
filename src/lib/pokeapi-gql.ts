@@ -30,7 +30,7 @@ async function postGQL<T>(query: string, variables: Record<string, unknown>) {
 
 /** Página de ESPECIES con tipos del Pokémon default + total; acepta gen opcional */
 export async function getPokemonSpeciesPageGQL(
-  limit = 36,
+  limit = 60,
   offset = 0,
   gen?: string,
 ): Promise<{ items: PokemonBasic[]; total: number }> {
@@ -83,14 +83,14 @@ export async function getPokemonSpeciesPageGQL(
 
     return { items, total: data.total.aggregate.count };
   } catch (err) {
-    console.log("Usando REST (fallback)");
+    console.log("Usando REST (fallback)", err);
     // Aquí deberías llamar a la función REST real, por ejemplo:
     return await getPokemonSpeciesPageREST(limit, offset, gen);
   }
 }
 
 /** Wrapper anterior por compatibilidad */
-export async function getPokemonListGQL(limit = 36, offset = 0) {
+export async function getPokemonListGQL(limit = 60, offset = 0) {
   const { items } = await getPokemonSpeciesPageGQL(limit, offset);
   return items;
 }

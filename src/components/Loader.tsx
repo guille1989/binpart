@@ -14,6 +14,8 @@ import type { LoaderProps } from "../types/pokemon";
  * @returns JSX con el loader y el botón.
  */
 export function Loader({ loading, hasMore, onLoadMore }: LoaderProps) {
+  console.log("loading state:", loading);
+  console.log("hasMore state:", hasMore);
   return (
     <div className="flex h-12 items-center justify-center">
       {/* Muestra mensaje de carga si loading es true */}

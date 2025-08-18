@@ -96,7 +96,7 @@ export default function HomePage() {
   }, [typeFilter, genFilter]);
 
   // Carga de página
-  const LIMIT = 36;
+  const LIMIT = 60;
   const loadPage = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
