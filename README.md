@@ -110,30 +110,6 @@ Listado paginado (GraphQL + fallback REST).
 }
 ```
 
-### `GET /api/search?q=<texto>`
-Buscador por nombre incluye evoluciones.
-
-```bash
-curl "http://localhost:3000/api/search?q=pika"
-```
-
-**Respuesta**
-```json
-{
-  "items": [
-    { "id":172,"name":"pichu","sprite":"...","isCurrent":false },
-    { "id":25,"name":"pikachu","sprite":"...","isCurrent":false },
-    { "id":26,"name":"raichu","sprite":"...","isCurrent":false }
-  ]
-}
-```
-
----
-
-## 🖥️ Páginas
-- `/` → Listado con filtros (tipo, generación), buscador y scroll infinito.
-- `/pokemon/[id]` → Detalle del Pokémon.
-
 ---
 
 ## ⚙️ Rendimiento y decisiones
@@ -152,23 +128,6 @@ curl "http://localhost:3000/api/search?q=pika"
 - Gen II: http://localhost:3000/api/pokemon/list?limit=36&offset=0&gen=generation-ii
 - UI: en `/`, elige una generación y luego “todas” → no debe dar 500 y recarga desde el inicio.
 - Detalle: http://localhost:3000/pokemon/25
-
----
-
-## 🛠️ Solución de problemas
-- **Error 500 al volver a “todas”**
-  - Solucionado construyendo el `where` de GraphQL solo si gen existe (`getPokemonSpeciesPageGQL` en `src/lib/pokeapi-gql.ts`).
-- **“Carga siempre lo mismo”**
-  - Asegúrate de que el handler del listado sea dinámico:
-    ```js
-    export const dynamic = "force-dynamic";
-    export const revalidate = 0;
-    ```
-- **Conflicto route vs page en /api/pokemon/[id]**
-  - En `/api` solo `route.ts`. La página UI va en `/pokemon/[id]/page.tsx`.
-- **Infinite scroll no dispara**
-  - Usa el botón “Cargar más” (fallback) o verifica que hay scroll.
-  - Ajusta `rootMargin` del `IntersectionObserver`.
 
 ---
 
